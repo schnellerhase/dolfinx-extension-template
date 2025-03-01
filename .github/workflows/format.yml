@@ -9,3 +9,11 @@ jobs:
       - uses: actions/setup-node@v4
       - run: npm install prettier prettier-plugin-toml
       - run: npx prettier . --check --plugin=prettier-plugin-toml
+
+  gersemi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install gersemi
+      - run: gersemi --check .
