@@ -74,3 +74,7 @@ jobs:
           cmake --install build
       - name: Run tests (C++)
         run: ctest -V
+
+      - name: Install extension_template (Python)
+        working-directory: python
+        run: pip install .[test] --no-build-isolation --verbose --config-settings=cmake.build-type="${BUILD_TYPE}"
