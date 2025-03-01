@@ -72,3 +72,5 @@ jobs:
           cmake -G Ninja -B build -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
           cmake --build build
           cmake --install build
+      - name: Run tests (C++)
+        run: ctest -V
