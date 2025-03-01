@@ -49,6 +49,12 @@ add_library(extension_template)
 set_property(TARGET extension_template PROPERTY CXX_STANDARD 23)
 set_property(TARGET extension_template PROPERTY CXX_STANDARD_REQUIRED TRUE)
 
+target_sources(
+    extension_template
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/extension_template/extension_template.cpp
+)
+
 target_link_libraries(extension_template PUBLIC dolfinx)
 
 include(GNUInstallDirs)
@@ -59,12 +65,6 @@ install(
     COMPONENT Development
     FILES_MATCHING
     PATTERN "*.hpp"
-)
-
-target_sources(
-    extension_template
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/extension_template/extension_template.cpp
 )
 
 target_include_directories(
@@ -113,3 +113,40 @@ install(
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/extension_template
     COMPONENT Development
 )
+
+if(BUILD_TESTING)
+    enable_testing()
+
+    find_package(GTest)
+
+    if(NOT GTest_FOUND)
+        include(FetchContent)
+        FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG
+                b514bdc898e2951020cbdca1304b75f5950d1f59 # v1.15.2
+            URL
+                https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+        )
+        FetchContent_MakeAvailable(googletest)
+
+        include(GoogleTest)
+    endif()
+
+    set(TEST_SOURCES ${PROJECT_SOURCE_DIR}/test/git_commit_hash.cpp)
+
+    foreach(TEST_FILE ${TEST_SOURCES})
+        message(${TEST_FILE})
+        get_filename_component(TEST_NAME ${TEST_FILE} NAME_WLE)
+        add_executable(${TEST_NAME} ${TEST_FILE})
+        set_property(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD 23)
+        set_property(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD_REQUIRED TRUE)
+        target_include_directories(
+            ${TEST_NAME}
+            PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
+        )
+        target_link_libraries(${TEST_NAME} extension_template GTest::gtest_main)
+        gtest_discover_tests(${TEST_NAME})
+    endforeach()
+endif()
