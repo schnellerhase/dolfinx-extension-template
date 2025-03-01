@@ -13,3 +13,49 @@ jobs:
       - run: pip install ruff
       - run: ruff check .
         working-directory: python
+
+  clang-tidy:
+    runs-on: ubuntu-latest
+    container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
+    env:
+      # TODO: central config
+      DOLFINX_BRANCH: main
+      BASIX_BRANCH: main
+      UFL_BRANCH: main
+      FFCX_BRANCH: main
+      CC: cc
+      CXX: c++
+      PETSC_ARCH: linux-gnu-real64-32
+      BUILD_TYPE: Debug
+      CXX_FLAGS: "-Wall -Werror -g -pedantic -Ofast -march=native"
+      PYTHONPATH: "/usr/local/dolfinx-${PETSC_TYPE}/lib/python3.12/dist-packages:/usr/local/lib"
+      LD_LIBRARY_PATH: "/usr/local/petsc/${PETSC_ARCH}/lib/:/usr/local"
+      DEB_PYTHON_INSTALL_LAYOUT: deb_system
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        if: ${{ matrix.CC }} == "clang"
+        run: |
+          apt-get update
+          apt-get install -y clang-tidy libgtest-dev
+
+      - name: Install DOLFINx
+        uses: jorgensd/actions/install-dolfinx@v0.4
+        with:
+          dolfinx: ${{ env.DOLFINX_BRANCH }}
+          ufl: ${{ env.UFL_BRANCH }}
+          basix: ${{ env.BASIX_BRANCH }}
+          ffcx: ${{ env.FFCX_BRANCH }}
+          petsc_arch: ${{ env.PETSC_ARCH }}
+
+      - name: Run clang-tidy and build (C++)
+        working-directory: cpp/
+        run: |
+          cmake -G Ninja -B build -DBUILD_TESTING=ON -DENABLE_CLANG_TIDY=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
+          cmake --build build
+          cmake --install build
+
+      - name: Run clang-tidy (Python)
+        working-directory: python
+        run: pip install . --no-build-isolation --verbose --config-settings=cmake.define.ENABLE_CLANG_TIDY=ON
