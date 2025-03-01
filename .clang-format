@@ -1,3 +1,30 @@
 ---
 BasedOnStyle: Mozilla
 
+IncludeBlocks: Regroup
+IncludeCategories:
+  # System headers
+  - Regex: "^<[a-zA-Z_]*>"
+    Priority: 0
+
+  # Third-party (excluding FEniCS)
+  - Regex: "^<mpi.h>" # single header
+    Priority: 10
+  - Regex: "^<(gtest|nanobind)/" # directory based
+    Priority: 10
+
+  # FEniCS
+  - Regex: "^<basix/"
+    Priority: 100
+  - Regex: "^<dolfinx/"
+    Priority: 101
+  - Regex: "^<dolfinx_wrappers/"
+    Priority: 102
+
+  # extension_template
+  - Regex: '^(<|")extension_template/'
+    Priority: 1000
+
+  # anything else
+  - Regex: ".*"
+    Priority: 10000
