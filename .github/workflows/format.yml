@@ -17,3 +17,11 @@ jobs:
       - uses: actions/setup-python@v5
       - run: pip install gersemi
       - run: gersemi --check .
+
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install clang-format
+      - run: find . -type f \( -name "*.cpp" -o -name "*.hpp" \) | xargs clang-format --dry-run --Werror
