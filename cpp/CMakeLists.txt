@@ -38,6 +38,13 @@ add_feature_info(
     "Build tests, can be run with ctest"
 )
 
+option(ENABLE_CLANG_TIDY "Run clang-tidy while building" OFF)
+add_feature_info(
+    ENABLE_CLANG_TIDY
+    ENABLE_CLANG_TIDY
+    "Run clang-tidy while building"
+)
+
 find_package(DOLFINX 0.9.0.0 REQUIRED)
 set_package_properties(
     DOLFINX
@@ -48,6 +55,15 @@ feature_summary(WHAT ALL)
 add_library(extension_template)
 set_property(TARGET extension_template PROPERTY CXX_STANDARD 23)
 set_property(TARGET extension_template PROPERTY CXX_STANDARD_REQUIRED TRUE)
+
+if(ENABLE_CLANG_TIDY)
+    set_target_properties(
+        extension_template
+        PROPERTIES
+            CMAKE_CXX_CLANG_TIDY
+                "clang-tidy;--config-file=${CMAKE_CURRENT_SOURCE_DIR}/../.clang-tidy"
+    )
+endif()
 
 target_sources(
     extension_template
@@ -146,6 +162,14 @@ if(BUILD_TESTING)
             ${TEST_NAME}
             PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include
         )
+        if(ENABLE_CLANG_TIDY)
+            set_target_properties(
+                ${TEST_NAME}
+                PROPERTIES
+                    CMAKE_CXX_CLANG_TIDY
+                        "clang-tidy;--config-file=${CMAKE_CURRENT_SOURCE_DIR}/../.clang-tidy"
+            )
+        endif()
         target_link_libraries(${TEST_NAME} extension_template GTest::gtest_main)
         gtest_discover_tests(${TEST_NAME})
     endforeach()
