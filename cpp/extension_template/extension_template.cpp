@@ -2,8 +2,8 @@
 
 #include <dolfinx/common/defines.h>
 
-std::string
-extension_template::dolfinx_git_commit_hash()
+auto
+extension_template::dolfinx_git_commit_hash() -> std::string
 {
   return dolfinx::git_commit_hash();
 }

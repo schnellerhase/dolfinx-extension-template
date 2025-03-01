@@ -4,7 +4,7 @@
 
 namespace extension_template {
 
-std::string
-dolfinx_git_commit_hash();
+auto
+dolfinx_git_commit_hash() -> std::string;
 
 }
