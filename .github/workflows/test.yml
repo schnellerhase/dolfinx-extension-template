@@ -1,0 +1,74 @@
+name: test
+
+on:
+  push:
+  schedule:
+    - cron: "0 8 * * *"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
+
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        petsc_arch:
+          [
+            linux-gnu-complex128-32,
+            linux-gnu-complex64-32,
+            linux-gnu-real64-32,
+            linux-gnu-real32-32,
+          ]
+        CXX: [c++]
+        CC: [cc]
+    env:
+      BASIX_REPOSITORY: fenics/basix
+      DOLFINX_REPOSITORY: fenics/dolfinx
+      FFCX_REPOSITORY: fenics/ffcx
+      UFL_REPOSITORY: fenics/ufl
+
+      BASIX_BRANCH: main
+      DOLFINX_BRANCH: main
+      FFCX_BRANCH: main
+      UFL_BRANCH: main
+
+      CC: ${{ matrix.CC }}
+      CXX: ${{ matrix.CXX }}
+      PETSC_ARCH: "${{ matrix.petsc_arch }}"
+      BUILD_TYPE: ${{ matrix.build_type }}
+      CXX_FLAGS: "-Wall -Werror -g -pedantic -Ofast -march=native"
+      PYTHONPATH: "/usr/local/dolfinx-${PETSC_TYPE}/lib/python3.12/dist-packages:/usr/local/lib"
+      LD_LIBRARY_PATH: "/usr/local/petsc/${PETSC_ARCH}/lib/:/usr/local"
+      DEB_PYTHON_INSTALL_LAYOUT: deb_system
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang
+        if: ${{ matrix.CC }} == "clang"
+        run: |
+          apt-get update
+          apt-get install -y clang
+
+      - name: Install DOLFINx
+        uses: jorgensd/actions/install-dolfinx@v0.4
+        with:
+          basix-repository: ${{ env.BASIX_REPOSITORY }}
+          basix: ${{ env.BASIX_BRANCH }}
+          dolfinx-repository: ${{ env.DOLFINX_REPOSITORY }}
+          dolfinx: ${{ env.DOLFINX_BRANCH }}
+          ffcx-repository: ${{ env.FFCX_REPOSITORY }}
+          ffcx: ${{ env.FFCX_BRANCH }}
+          petsc_arch: ${{ env.PETSC_ARCH }}
+          ufl-repository: ${{ env.UFL_REPOSITORY }}
+          ufl: ${{ env.UFL_BRANCH }}
+
+      - name: Install Dependencies
+        run: apt-get install -y libgtest-dev
+
+      - name: Install extension_template (C++)
+        working-directory: cpp/
+        run: |
+          cmake -G Ninja -B build -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
+          cmake --build build
+          cmake --install build
