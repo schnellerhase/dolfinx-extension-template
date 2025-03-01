@@ -97,5 +97,18 @@ set_target_properties(
     PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
+nanobind_add_stub(
+  extenstion_template_mod_stub
+  MODULE extension_template_mod
+  OUTPUT extension_template_mod.pyi
+  PYTHON_PATH $<TARGET_FILE_DIR:extension_template_mod>
+  DEPENDS extension_template_mod
+)
+
 install(TARGETS extension_template_mod LIBRARY DESTINATION extension_template)
 install(TARGETS extension_template_mod DESTINATION extension_template)
+install(
+    FILES ${CMAKE_BINARY_DIR}/extension_template_mod.pyi
+    DESTINATION extension_template/extension_template_mod
+    RENAME __init__.pyi
+)
