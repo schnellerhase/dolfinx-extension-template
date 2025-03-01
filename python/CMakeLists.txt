@@ -28,6 +28,8 @@ if(NOT SKBUILD)
     )
 endif()
 
+option(ENABLE_CLANG_TIDY "Run clang-tidy while building" OFF)
+
 # Try to import all Python components potentially needed by nanobind
 find_package(
     Python
@@ -64,6 +66,18 @@ else()
 endif()
 
 set(FILES ${FILES} extension_template.cpp)
+
+# Given the way nanobind builds its module, the clang-tidy checks are also run on these files if specified project wide.
+if(ENABLE_CLANG_TIDY)
+    foreach(FILE ${FILES})
+        set_source_files_properties(
+            ${FILE}
+            PROPERTIES
+                CMAKE_CXX_CLANG_TIDY
+                    "clang-tidy;--config-file=${CMAKE_CURRENT_SOURCE_DIR}/../.clang-tidy"
+        )
+    endforeach()
+endif()
 
 nanobind_add_module(
   extension_template_mod
