@@ -51,6 +51,12 @@ jobs:
           cmake --build build
           cmake --install build
 
+      - name: Run clang-tidy on demos (C++)
+        working-directory: cpp/demo
+        run: |
+          cmake -G Ninja -B build -DENABLE_CLANG_TIDY=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
+          cmake --build build
+
       - name: Run clang-tidy (Python)
         working-directory: python
         run: >
