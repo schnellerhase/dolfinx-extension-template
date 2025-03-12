@@ -8,5 +8,5 @@ main() -> int
 {
   std::cout << "DOLFINx git commit hash (called through "
                "extension_template): "
-            << extension_template::dolfinx_git_commit_hash() << std::endl;
+            << extension_template::dolfinx_git_commit_hash() << "\n";
 }
