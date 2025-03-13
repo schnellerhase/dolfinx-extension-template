@@ -12,6 +12,8 @@ IncludeCategories:
     Priority: 10
   - Regex: "^<(gtest|nanobind)/" # directory based
     Priority: 10
+  - Regex: "^<petsc[a-z.]*>" # PETSc
+    Priority: 10
 
   # FEniCS
   - Regex: "^<basix/"
