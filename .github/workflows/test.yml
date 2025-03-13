@@ -80,7 +80,9 @@ jobs:
 
       - name: Run demos (C++)
         working-directory: cpp/demo/build
-        run: ./simple/demo_simple
+        run: |
+          ./simple/demo_simple
+          ./ufl/demo_ufl
 
       - name: Install extension_template (Python)
         working-directory: python

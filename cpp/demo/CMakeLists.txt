@@ -18,3 +18,4 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 add_subdirectory(simple)
+add_subdirectory(ufl)
