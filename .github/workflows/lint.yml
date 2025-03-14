@@ -18,11 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
     env:
-      # TODO: central config
-      DOLFINX_BRANCH: main
-      BASIX_BRANCH: main
-      UFL_BRANCH: main
-      FFCX_BRANCH: main
       CC: cc
       CXX: c++
       PETSC_ARCH: linux-gnu-real64-32
@@ -34,6 +29,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Load environment variables
+        run: cat .github/workflows/.env >> $GITHUB_ENV
+
       - name: Install dependencies
         if: ${{ matrix.CC }} == "clang"
         run: |
@@ -43,10 +41,14 @@ jobs:
       - name: Install DOLFINx
         uses: jorgensd/actions/install-dolfinx@v0.4
         with:
-          dolfinx: ${{ env.DOLFINX_BRANCH }}
-          ufl: ${{ env.UFL_BRANCH }}
-          basix: ${{ env.BASIX_BRANCH }}
-          ffcx: ${{ env.FFCX_BRANCH }}
+          ufl-repository: ${{ env.REPOSITORY-UFL }}
+          ufl: ${{ env.BRANCH-UFL }}
+          basix-repository: ${{ env.REPOSITORY-BASIX }}
+          basix: ${{ env.BRANCH-BASIX }}
+          ffcx-repository: ${{ env.REPOSITORY-FFCX }}
+          ffcx: ${{ env.BRANCH-FFCX }}
+          dolfinx-repository: ${{ env.REPOSITORY-DOLFINX }}
+          dolfinx: ${{ env.BRANCH-DOLFINX }}
           petsc_arch: ${{ env.PETSC_ARCH }}
 
       - name: Run clang-tidy and build (C++)
@@ -59,14 +61,11 @@ jobs:
       - name: Run clang-tidy (Python)
         working-directory: python
         run: pip install . --no-build-isolation --verbose --config-settings=cmake.define.ENABLE_CLANG_TIDY=ON
+
   mypy:
     runs-on: ubuntu-latest
     container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
     env:
-      DOLFINX_BRANCH: main
-      BASIX_BRANCH: main
-      UFL_BRANCH: main
-      FFCX_BRANCH: main
       CC: cc
       CXX: c++
       PETSC_ARCH: linux-gnu-real64-32
@@ -78,6 +77,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Load environment variables
+        run: cat .github/workflows/.env >> $GITHUB_ENV
+
       - name: Install dependencies
         if: ${{ matrix.CC }} == "clang"
         run: |
@@ -87,12 +89,14 @@ jobs:
       - name: Install DOLFINx
         uses: jorgensd/actions/install-dolfinx@main
         with:
-          dolfinx: ${{ env.DOLFINX_BRANCH }}
-          dolfinx-repository: schnellerhase/fenics-dolfinx
-          ufl: ${{ env.UFL_BRANCH }}
-          basix: ${{ env.BASIX_BRANCH }}
-          basix-repository: schnellerhase/fenics-basix
-          ffcx: ${{ env.FFCX_BRANCH }}
+          ufl-repository: ${{ env.REPOSITORY-UFL }}
+          ufl: ${{ env.BRANCH-UFL }}
+          basix-repository: ${{ env.REPOSITORY-BASIX }}
+          basix: ${{ env.BRANCH-BASIX }}
+          ffcx-repository: ${{ env.REPOSITORY-FFCX }}
+          ffcx: ${{ env.BRANCH-FFCX }}
+          dolfinx-repository: ${{ env.REPOSITORY-DOLFINX }}
+          dolfinx: ${{ env.BRANCH-DOLFINX }}
           petsc_arch: ${{ env.PETSC_ARCH }}
 
       - name: Install (C++)

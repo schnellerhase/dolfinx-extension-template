@@ -23,16 +23,6 @@ jobs:
         CXX: [c++]
         CC: [cc]
     env:
-      BASIX_REPOSITORY: fenics/basix
-      DOLFINX_REPOSITORY: fenics/dolfinx
-      FFCX_REPOSITORY: fenics/ffcx
-      UFL_REPOSITORY: fenics/ufl
-
-      BASIX_BRANCH: main
-      DOLFINX_BRANCH: main
-      FFCX_BRANCH: main
-      UFL_BRANCH: main
-
       CC: ${{ matrix.CC }}
       CXX: ${{ matrix.CXX }}
       PETSC_ARCH: "${{ matrix.petsc_arch }}"
@@ -44,6 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Load environment variables
+        run: cat .github/workflows/.env >> $GITHUB_ENV
+
       - name: Install clang
         if: ${{ matrix.CC }} == "clang"
         run: |
@@ -53,15 +46,15 @@ jobs:
       - name: Install DOLFINx
         uses: jorgensd/actions/install-dolfinx@v0.4
         with:
-          basix-repository: ${{ env.BASIX_REPOSITORY }}
-          basix: ${{ env.BASIX_BRANCH }}
-          dolfinx-repository: ${{ env.DOLFINX_REPOSITORY }}
-          dolfinx: ${{ env.DOLFINX_BRANCH }}
-          ffcx-repository: ${{ env.FFCX_REPOSITORY }}
-          ffcx: ${{ env.FFCX_BRANCH }}
+          ufl-repository: ${{ env.REPOSITORY-UFL }}
+          ufl: ${{ env.BRANCH-UFL }}
+          basix-repository: ${{ env.REPOSITORY-BASIX }}
+          basix: ${{ env.BRANCH-BASIX }}
+          ffcx-repository: ${{ env.REPOSITORY-FFCX }}
+          ffcx: ${{ env.BRANCH-FFCX }}
+          dolfinx-repository: ${{ env.REPOSITORY-DOLFINX }}
+          dolfinx: ${{ env.BRANCH-DOLFINX }}
           petsc_arch: ${{ env.PETSC_ARCH }}
-          ufl-repository: ${{ env.UFL_REPOSITORY }}
-          ufl: ${{ env.UFL_BRANCH }}
 
       - name: Install Dependencies
         run: apt-get install -y libgtest-dev
