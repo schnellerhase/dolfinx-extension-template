@@ -9,7 +9,7 @@ on:
     - cron: "0 8 * * *"
 
 jobs:
-  run:
+  test:
     runs-on: ubuntu-latest
     container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
 
