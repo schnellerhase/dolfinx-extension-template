@@ -1,8 +1,8 @@
 # DOLFINx-extension-template
 
 ![format-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/format.yml/badge.svg)
-![lint-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/lint.yml/badge.svg)
 ![test-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/test.yml/badge.svg)
+![ruff-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/ruff.yml/badge.svg)
 ![mypy-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/mypy.yml/badge.svg)
 ![clang-tidy-workflow](https://github.com/schnellerhase/dolfinx-extension-template/actions/workflows/clang-tidy.yml/badge.svg)
 
