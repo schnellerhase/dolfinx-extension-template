@@ -1,20 +1,9 @@
-name: lint
+name: mypy
 
 on: [push]
 
 jobs:
-  ruff-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - run: pip install ruff
-      - run: ruff check .
-        working-directory: python
-
-  clang-tidy:
+  mypy:
     runs-on: ubuntu-latest
     container: ghcr.io/fenics/dolfinx/dev-env:current-mpich
     env:
@@ -39,7 +28,7 @@ jobs:
           apt-get install -y clang-tidy libgtest-dev
 
       - name: Install DOLFINx
-        uses: jorgensd/actions/install-dolfinx@v0.4
+        uses: jorgensd/actions/install-dolfinx@main
         with:
           ufl-repository: ${{ env.REPOSITORY-UFL }}
           ufl: ${{ env.BRANCH-UFL }}
@@ -51,13 +40,16 @@ jobs:
           dolfinx: ${{ env.BRANCH-DOLFINX }}
           petsc_arch: ${{ env.PETSC_ARCH }}
 
-      - name: Run clang-tidy and build (C++)
+      - name: Install (C++)
         working-directory: cpp/
         run: |
-          cmake -G Ninja -B build -DBUILD_TESTING=ON -DENABLE_CLANG_TIDY=ON -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
+          cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}"
           cmake --build build
           cmake --install build
 
-      - name: Run clang-tidy (Python)
+      - name: Install (Python)
         working-directory: python
-        run: pip install . --no-build-isolation --verbose --config-settings=cmake.define.ENABLE_CLANG_TIDY=ON
+        run: pip install .[typing] --no-build-isolation --verbose --config-settings=cmake.build-type="${BUILD_TYPE}"
+
+      - name: Run mypy
+        run: mypy -p extension_template --config-file python/pyproject.toml
