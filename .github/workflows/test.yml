@@ -84,7 +84,12 @@ jobs:
 
       - name: Install extension_template (Python)
         working-directory: python
-        run: pip install .[test] --no-build-isolation --verbose --config-settings=cmake.build-type="${BUILD_TYPE}"
+        run: >
+          pip install .[test]
+          --no-build-isolation
+          --verbose
+          --config-settings=cmake.build-type="${BUILD_TYPE}"
+          --config-settings=cmake.define.CXX_FLAGS="${CXX_FLAGS}"
 
       - name: Run tests (Python)
         working-directory: python/test
