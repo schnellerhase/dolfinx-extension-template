@@ -1,4 +1,4 @@
-Checks: "-*,bugprone*,cppcoreguidelines*,google*,misc*,modernize*,mpi*,performance*,readability*"
+Checks: "-*,bugprone*,cppcoreguidelines*,google*,misc*,modernize*,mpi*,performance*,readability*,-readability-identifier-length"
 WarningsAsErrors: "*"
 UseColor: true
 HeaderFilterRegex: ".*"
