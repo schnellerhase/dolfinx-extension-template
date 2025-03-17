@@ -53,7 +53,12 @@ jobs:
 
       - name: Install (Python)
         working-directory: python
-        run: pip install .[typing] --no-build-isolation --verbose --config-settings=cmake.build-type="${BUILD_TYPE}"
+        run: >
+          pip install .[typing]
+          --no-build-isolation
+          --verbose
+          --config-settings=cmake.build-type="${BUILD_TYPE}"
+          --config-settings=cmake.define.CXX_FLAGS="${CXX_FLAGS}"
 
       - name: Run mypy
         run: mypy -p extension_template --config-file python/pyproject.toml

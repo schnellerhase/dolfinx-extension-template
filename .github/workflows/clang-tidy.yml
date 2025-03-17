@@ -53,4 +53,10 @@ jobs:
 
       - name: Run clang-tidy (Python)
         working-directory: python
-        run: pip install . --no-build-isolation --verbose --config-settings=cmake.define.ENABLE_CLANG_TIDY=ON
+        run: >
+          pip install . 
+          --no-build-isolation
+          --verbose
+          --config-settings=cmake.build-type="${BUILD_TYPE}"
+          --config-settings=cmake.define.CXX_FLAGS="${CXX_FLAGS}"
+          --config-settings=cmake.define.ENABLE_CLANG_TIDY=ON
