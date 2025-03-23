@@ -75,4 +75,4 @@ jobs:
           --config-settings=cmake.define.CXX_FLAGS="${CXX_FLAGS}"
 
       - name: Run valgrind on tests (Python)
-        run: valgrind ${VALGRIND_FLAGS} pytest python/test -v
+        run: PYTHONMALLOC=malloc valgrind ${VALGRIND_FLAGS} pytest python/test -v
