@@ -45,16 +45,17 @@ assemble_form()
                              false);
 
   auto V = std::make_shared<dolfinx::fem::FunctionSpace<T>>(
-    fem::create_functionspace<T>(
+    dolfinx::fem::create_functionspace<T>(
       mesh, std::make_shared<dolfinx::fem::FiniteElement<T>>(element)));
 
-  const auto L = fem::create_form<T>(*form_form_L, { V }, {}, {}, {}, {});
+  const auto L =
+    dolfinx::fem::create_form<T>(*form_form_L, { V }, {}, {}, {}, {});
 
-  la::Vector<T> b(L.function_spaces()[0]->dofmap()->index_map,
-                  L.function_spaces()[0]->dofmap()->index_map_bs());
+  dolfinx::la::Vector<T> b(L.function_spaces()[0]->dofmap()->index_map,
+                           L.function_spaces()[0]->dofmap()->index_map_bs());
 
   b.set(0.0);
-  fem::assemble_vector(b.mutable_array(), L);
+  dolfinx::fem::assemble_vector(b.mutable_array(), L);
   b.scatter_rev(std::plus<>());
 }
 
