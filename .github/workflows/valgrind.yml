@@ -19,7 +19,7 @@ jobs:
       PYTHONPATH: "/usr/local/dolfinx-${PETSC_TYPE}/lib/python3.12/dist-packages:/usr/local/lib"
       LD_LIBRARY_PATH: "/usr/local/petsc/${PETSC_ARCH}/lib/:/usr/local"
       DEB_PYTHON_INSTALL_LAYOUT: deb_system
-      VALGRIND_FLAGS: "--leak-check=full --show-leak-kinds=definite,indirect --errors-for-leak-kinds=definite,indirect --error-exitcode=1 --read-var-info=yes --track-origins=yes"
+      VALGRIND_FLAGS: "--suppressions=${{ github.workspace }}/valgrind-python.supp --leak-check=full --show-leak-kinds=definite,indirect --errors-for-leak-kinds=definite,indirect --error-exitcode=1 --read-var-info=yes --track-origins=yes"
     steps:
       - uses: actions/checkout@v4
 
@@ -75,4 +75,4 @@ jobs:
           --config-settings=cmake.define.CXX_FLAGS="${CXX_FLAGS}"
 
       - name: Run valgrind on tests (Python)
-        run: valgrind ${VALGRIND_FLAGS} pytest python/test -v
+        run: PYTHONMALLOC=malloc valgrind ${VALGRIND_FLAGS} pytest python/test -v
